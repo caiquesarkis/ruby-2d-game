@@ -1,84 +1,62 @@
 require 'ruby2d'
+require_relative 'GameObjects'
 
 set title: "Asteroids"
 
-class Asteroid < Circle
-    def initialize (x, y, radius, sectors, color, z)
-        super(x: x, y: y, radius: radius, sectors: sectors, color: color, z: z)
-        @vx = 1
-    end
-    def vx 
-        @vx
-    end
+asteroids = []
+
+def addAsteroid(asteroids)
+    spawnRadius = Math.sqrt(Window.width**2 + Window.height**2)
+    x = spawnRadius * Math.cos(3.14*rand) + Window.width/2
+    y = spawnRadius * Math.sin(3.14*rand) + Window.height/2
+
+    newcircle = GameObjects::Asteroid.new(
+        x,y,
+        20,
+        32,
+        'fuchsia',
+        10
+    )
+    asteroids.append(newcircle)
 end
 
-class Player < Circle
-    def initialize (x, y, radius, sectors, color, z)
-        super(x: x, y: y, radius: radius, sectors: sectors, color: color, z: z)
-        @vx = 1
-        @vy = 1
-    end
-    def vx 
-        @vx
-    end
-end
-
-
-class Scene
-    def initialize
-        @asteroids = []
-    end
-    def asteroids
-        @asteroids
-    end
-    def addAsteroid
-        newcircle = Asteroid.new(
-            rand(100) + 100,rand(100) + 100,
-            50,
-            32,
-            'fuchsia',
-            10
-        )
-        @asteroids.append(newcircle)
-    end
-end
-
-def spawnAsteroid(scene)
-    if rand() < 0.03
-        scene.addAsteroid
-    end
-end
-
-
-
-
-player = Player.new(
+player = GameObjects::Player.new(
             rand(100) + 100, rand(100) + 100,
-            25,
+            15,
             32,
-            'black',
+            'white',
             10
         )
-scene = Scene.new
 
 update do
-    spawnAsteroid(scene)
-    for asteroid in scene.asteroids
-        asteroid.x += 1
+    if rand() < 0.03
+        addAsteroid(asteroids)
+    end
+
+    player.update
+    for asteroid in asteroids
+        asteroid.update
     end
 end
 
 on :key do |event| 
     case event.key
     when "w"
-        player.y -= 1        
+        player.move("UP")
     when "s"
-        player.y += 1        
+        player.move("DOWN")
     when "a"
-        player.x -= 1        
+        player.move("LEFT")
     when "d"
-        player.x += 1        
+        player.move("RIGHT")
     end
+end
+
+on :mouse_down do |event|
+  case event.button
+  when :left
+    player.shootBullet(event.x, event.y)
+  end
 end
 
 show
