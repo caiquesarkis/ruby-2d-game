@@ -11,6 +11,19 @@ module GameObjects
         def update
             @x += @vx
             @y += @vy
+
+            if(@x > Window.width)
+                @x -= Window.width
+            end
+            if(@x < 0)
+                @x += Window.width
+            end
+            if(@y > Window.height)
+                @y -= Window.height
+            end
+            if(@y < 0)
+                @y += Window.height
+            end
         end
     end
 
@@ -29,6 +42,7 @@ module GameObjects
     end
 
     class Player < Circle
+        attr_reader :bullets
         def initialize (x, y, radius, sectors, color, z)
             super(x: x, y: y, radius: radius, sectors: sectors, color: color, z: z)
             @speed = 4
@@ -62,7 +76,6 @@ module GameObjects
             @y += @vy
             @vx *= @friction
             @vy *= @friction
-
             for bullet in @bullets
                 bullet.update
             end
