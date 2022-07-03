@@ -4,8 +4,11 @@ module GameObjects
     class Asteroid < Circle
         def initialize (x, y, radius, sectors, color, z)
             super(x: x, y: y, radius: radius, sectors: sectors, color: color, z: z)
-            @vy = rand(-3..3) + rand(-0.1..0.1)
-            @vx = rand(-3..3) + rand(-0.1..0.1)
+            @speed = 3
+            randomVx = rand(-@speed..@speed)
+            randomVy = rand(-@speed..@speed)
+            @vy = randomVx != 0 ? randomVx : 1
+            @vx = randomVy != 0 ? randomVy : 1
         end
 
         def update
@@ -13,17 +16,25 @@ module GameObjects
             @y += @vy
 
             if(@x > Window.width)
-                @x -= Window.width
+                @x = 0
             end
             if(@x < 0)
-                @x += Window.width
+                @x = Window.width
             end
             if(@y > Window.height)
-                @y -= Window.height
+                @y = 0
             end
             if(@y < 0)
-                @y += Window.height
+                @y = Window.height
             end
+        end
+    end
+
+    class Ammo < Circle
+        attr_reader :quantity
+        def initialize (x, y, radius, sectors, color, z)
+            super(x: x, y: y, radius: radius, sectors: sectors, color: color, z: z)
+            @quantity = rand(3..7)
         end
     end
 
@@ -43,32 +54,37 @@ module GameObjects
 
     class Player < Circle
         attr_reader :bullets
+        attr_accessor :ammo
         def initialize (x, y, radius, sectors, color, z)
             super(x: x, y: y, radius: radius, sectors: sectors, color: color, z: z)
             @speed = 4
             @vx = 0
             @vy = 0
-            @friction = 0.9
+            @friction = 0.95
             @health = 10
             @bullets = []
+            @ammo = 5
         end
 
         def shootBullet(mouseX, mouseY)
-            deltaVx = mouseX - @x
-            deltaVy = mouseY - @y
-            angle = Math.atan2( mouseY - @y, mouseX - @x )
-            vx = Math.cos(angle)
-            vy = Math.sin(angle)
-            newBullet = Bullet.new(
-                @x, @y,
-                5,
-                32,
-                'red',
-                10,
-                vx,
-                vy 
-            )
-            @bullets.append(newBullet)
+            if(@ammo > 0)
+                deltaVx = mouseX - @x
+                deltaVy = mouseY - @y
+                angle = Math.atan2( mouseY - @y, mouseX - @x )
+                vx = Math.cos(angle)
+                vy = Math.sin(angle)
+                newBullet = Bullet.new(
+                    @x, @y,
+                    5,
+                    32,
+                    'white',
+                    10,
+                    vx,
+                    vy 
+                )
+                @bullets.append(newBullet)
+                @ammo -= 1
+            end
         end
 
         def update
