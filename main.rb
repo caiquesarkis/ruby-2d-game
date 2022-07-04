@@ -5,6 +5,7 @@ set title: "Asteroids", width: 1200, height: 650
 
 asteroids = []
 ammos = []
+speedBoosters = []
 
 score = Text.new(
   0.to_s,
@@ -42,6 +43,19 @@ def spawnAmmo(ammo)
     ammo.append(newAmmo)
 end
 
+def spawnSpeedBooster(speedBoosters)
+    x = rand(0..Window.width)
+    y = rand(0..Window.height)
+    newSpeedBooster = GameObjects::SpeedBooster.new(
+        x, y,
+        5,
+        32,
+        'yellow',
+        10
+    )
+    speedBoosters.append(newSpeedBooster)
+end
+
 player = GameObjects::Player.new(
             rand(100) + 100, rand(100) + 100,
             10,
@@ -59,11 +73,24 @@ update do
         if rand() < 0.003
             spawnAmmo(ammos)
         end
+
+        if rand() < 0.002
+            spawnSpeedBooster(speedBoosters)
+        end
+
         for ammo in ammos
             if isColliding(player, ammo)
                 player.ammo += ammo.quantity
                 ammo.remove
                 ammos.delete(ammo)
+            end
+        end
+
+        for speedBooster in speedBoosters
+            if isColliding(player, speedBooster)
+                player.speed += speedBooster.boost
+                speedBooster.remove
+                speedBoosters.delete(speedBooster)
             end
         end
 
@@ -109,18 +136,27 @@ update do
             end
         end
         
+        
         player.update
         for asteroid in asteroids
             if(distance(asteroid, player) < (asteroid.radius + player.radius))
                 isGameOver = true
-                score = Text.new(
+                gameOverText = Text.new(
                     "Game Over",
                     size: 100,
+                    color: 'gray',
+                    z: 10
+                )
+                gameOverText.x = Window.width/2 - gameOverText.width/2
+                gameOverText.y = Window.height/2 - gameOverText.height/2
+                finalScore = Text.new(
+                    "High Score: " + score.text,
+                    size: 50,
                     color: 'white',
                     z: 10
                 )
-                score.x = Window.width/2 - score.width/2
-                score.y = Window.height/2 - score.height/2
+                finalScore.x = Window.width/2 - finalScore.width/2
+                finalScore.y = Window.height/2 + 100
             end
             asteroid.update
         end

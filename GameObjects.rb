@@ -38,6 +38,14 @@ module GameObjects
         end
     end
 
+    class SpeedBooster < Circle
+        attr_reader :boost
+        def initialize (x, y, radius, sectors, color, z)
+            super(x: x, y: y, radius: radius, sectors: sectors, color: color, z: z)
+            @boost = rand(0.1..0.5)
+        end
+    end
+
     class Bullet < Circle
         def initialize (x, y, radius, sectors, color, z, vx, vy)
             super(x: x, y: y, radius: radius, sectors: sectors, color: color, z: z)
@@ -55,9 +63,11 @@ module GameObjects
     class Player < Circle
         attr_reader :bullets
         attr_accessor :ammo
+        attr_accessor :speed
         def initialize (x, y, radius, sectors, color, z)
             super(x: x, y: y, radius: radius, sectors: sectors, color: color, z: z)
             @speed = 4
+            @aceleration = 0.3
             @vx = 0
             @vy = 0
             @friction = 0.95
@@ -100,13 +110,21 @@ module GameObjects
         def move(direction)
             case direction
             when "UP"
-                @vy = -@speed
+                if @vy.abs <= @speed
+                    @vy -= @aceleration
+                end
             when "DOWN"
-                @vy = @speed
+                if @vy.abs <= @speed
+                    @vy += @aceleration
+                end
             when "LEFT"
-                @vx = -@speed
+                if @vx.abs <= @speed
+                    @vx -= @aceleration
+                end
             when "RIGHT"
-                @vx = @speed
+                if @vx.abs <= @speed
+                    @vx += @aceleration
+                end
             end
         end
     end
