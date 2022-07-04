@@ -2,6 +2,7 @@ require 'ruby2d'
 
 module GameObjects
     class Asteroid < Circle
+        attr_accessor :image
         def initialize (x, y, radius, sectors, color, z)
             super(x: x, y: y, radius: radius, sectors: sectors, color: color, z: z)
             @speed = 3
@@ -9,6 +10,11 @@ module GameObjects
             randomVy = rand(-@speed..@speed)
             @vy = randomVx != 0 ? randomVx : 1
             @vx = randomVy != 0 ? randomVy : 1
+            @image = Image.new(
+                './assets/enemy.svg',
+                width: 2*@radius, height: 2*@radius,
+                z: 10
+            )
         end
 
         def update
@@ -27,6 +33,11 @@ module GameObjects
             if(@y < 0)
                 @y = Window.height
             end
+            self.moveImage
+        end
+        def moveImage
+            @image.x = @x - @radius
+            @image.y = @y - @radius
         end
     end
 
@@ -74,6 +85,11 @@ module GameObjects
             @health = 10
             @bullets = []
             @ammo = 5
+            @image = Image.new(
+                './assets/basic.svg',
+                width: 2*@radius, height: 2*@radius,
+                z: 10
+            )
         end
 
         def shootBullet(mouseX, mouseY)
@@ -105,6 +121,12 @@ module GameObjects
             for bullet in @bullets
                 bullet.update
             end
+            self.moveImage
+        end
+
+        def moveImage
+            @image.x = @x - @radius
+            @image.y = @y - @radius
         end
 
         def move(direction)

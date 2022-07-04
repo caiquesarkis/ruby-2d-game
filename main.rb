@@ -1,7 +1,7 @@
 require 'ruby2d'
 require_relative 'GameObjects'
 
-set title: "Asteroids", width: 1200, height: 650
+set title: "Asteroids", width: 1200, height: 650, fullscreen: true
 
 asteroids = []
 ammos = []
@@ -24,7 +24,7 @@ def spawnAsteroid(asteroids)
         x,y,
         15,
         32,
-        'red',
+        [1, 0.5, 0.2, 0],
         10
     )
     asteroids.append(newcircle)
@@ -58,9 +58,9 @@ end
 
 player = GameObjects::Player.new(
             rand(100) + 100, rand(100) + 100,
-            10,
+            20,
             32,
-            'blue',
+            [1, 0.5, 0.2, 0],
             10
         )
 
@@ -100,6 +100,7 @@ update do
                 for j in 0..asteroids.length - 1
                     if (bullets[i] != nil) && (asteroids[j] != nil)
                         if isColliding(asteroids[j], bullets[i])
+                            asteroids[j].image.remove
                             asteroids[j].remove
                             bullets[i].remove
                             asteroids.delete(asteroids[j])
