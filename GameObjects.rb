@@ -18,8 +18,8 @@ module GameObjects
         end
 
         def update
-            @x += @vx
-            @y += @vy
+            @x += @vx + rand(-0.1..0.1)
+            @y += @vy + rand(-0.1..0.1)
 
             if(@x > Window.width)
                 @x = 0
@@ -43,31 +43,54 @@ module GameObjects
 
     class Ammo < Circle
         attr_reader :quantity
+        attr_accessor :image
         def initialize (x, y, radius, sectors, color, z)
             super(x: x, y: y, radius: radius, sectors: sectors, color: color, z: z)
             @quantity = rand(3..7)
+            @image = Image.new(
+                './assets/ammo.svg',                
+                x: @x - 2*@radius, y: @y - 2*@radius,
+                width: 2*@radius, height: 2*@radius,
+                z: 10
+            )
         end
     end
 
     class SpeedBooster < Circle
         attr_reader :boost
+        attr_accessor :image
         def initialize (x, y, radius, sectors, color, z)
             super(x: x, y: y, radius: radius, sectors: sectors, color: color, z: z)
             @boost = rand(0.1..0.5)
+            @image = Image.new(
+                './assets/speedbooster.svg',
+                x: @x - 2*@radius, y: @y -2*@radius,
+                width: 2*@radius, height: 2*@radius,
+                z: 10
+            )
         end
     end
 
     class Bullet < Circle
+        attr_accessor :image
         def initialize (x, y, radius, sectors, color, z, vx, vy)
             super(x: x, y: y, radius: radius, sectors: sectors, color: color, z: z)
             @speed = 10
             @vx = @speed * vx
             @vy = @speed * vy 
+            @image = Image.new(
+                './assets/ammo.svg',
+                x: @x, y: @y,
+                width: 2*@radius, height: 2*@radius,
+                z: 10
+            )
         end
 
         def update
             @x += @vx
             @y += @vy
+            @image.x = @x -2*@radius
+            @image.y = @y -2*@radius
         end
     end
 
@@ -101,9 +124,9 @@ module GameObjects
                 vy = Math.sin(angle)
                 newBullet = Bullet.new(
                     @x, @y,
-                    5,
+                    10,
                     32,
-                    'white',
+                    [1, 0.5, 0.2, 0],
                     10,
                     vx,
                     vy 

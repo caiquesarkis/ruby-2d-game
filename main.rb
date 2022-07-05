@@ -1,7 +1,7 @@
 require 'ruby2d'
 require_relative 'GameObjects'
 
-set title: "Asteroids", width: 1200, height: 650, fullscreen: true
+set title: "Asteroids", width: 1200, height: 650, fullscreen: true, background: '#003C5F'
 
 asteroids = []
 ammos = []
@@ -35,9 +35,9 @@ def spawnAmmo(ammo)
     y = rand(0..Window.height)
     newAmmo = GameObjects::Ammo.new(
         x, y,
-        5,
+        10,
         32,
-        'green',
+        [1, 0.5, 0.2, 0],
         10
     )
     ammo.append(newAmmo)
@@ -48,9 +48,9 @@ def spawnSpeedBooster(speedBoosters)
     y = rand(0..Window.height)
     newSpeedBooster = GameObjects::SpeedBooster.new(
         x, y,
-        5,
+        10,
         32,
-        'yellow',
+        [1, 0.5, 0.2, 0],
         10
     )
     speedBoosters.append(newSpeedBooster)
@@ -81,6 +81,7 @@ update do
         for ammo in ammos
             if isColliding(player, ammo)
                 player.ammo += ammo.quantity
+                ammo.image.remove
                 ammo.remove
                 ammos.delete(ammo)
             end
@@ -89,6 +90,7 @@ update do
         for speedBooster in speedBoosters
             if isColliding(player, speedBooster)
                 player.speed += speedBooster.boost
+                speedBooster.image.remove
                 speedBooster.remove
                 speedBoosters.delete(speedBooster)
             end
@@ -101,6 +103,7 @@ update do
                     if (bullets[i] != nil) && (asteroids[j] != nil)
                         if isColliding(asteroids[j], bullets[i])
                             asteroids[j].image.remove
+                            bullets[i].image.remove
                             asteroids[j].remove
                             bullets[i].remove
                             asteroids.delete(asteroids[j])
